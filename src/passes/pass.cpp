@@ -147,6 +147,9 @@ void PassRegistry::registerPasses() {
   registerPass("extract-function-index",
                "leaves just one function selected by index",
                createExtractFunctionIndexPass);
+  registerPass("remove-functions",
+               "erases the given set of functions",
+               createRemoveFunctionsPass);
   registerPass(
     "flatten", "flattens out code, removing nesting", createFlattenPass);
   registerPass("fpcast-emu",
@@ -204,6 +207,9 @@ void PassRegistry::registerPasses() {
   registerPass("log-execution",
                "instrument the build with logging of where execution goes",
                createLogExecutionPass);
+  registerPass("remove-uncalled-functions",
+               "removes functions that were not executed during a runtime coverage profiled run",
+               createRemoveUncalledFunctionsPass);
   registerPass("i64-to-i32-lowering",
                "lower all uses of i64s to use i32s instead",
                createI64ToI32LoweringPass);
