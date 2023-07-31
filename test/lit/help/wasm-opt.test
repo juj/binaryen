@@ -349,6 +349,9 @@
 ;; CHECK-NEXT:   --print-stack-ir                              print out Stack IR (useful for
 ;; CHECK-NEXT:                                                 internal debugging)
 ;; CHECK-NEXT:
+;; CHECK-NEXT:   --remove-functions                            erases the given set of
+;; CHECK-NEXT:                                                 functions
+;; CHECK-NEXT:
 ;; CHECK-NEXT:   --remove-imports                              removes imports and replaces
 ;; CHECK-NEXT:                                                 them with nops
 ;; CHECK-NEXT:
@@ -356,6 +359,10 @@
 ;; CHECK-NEXT:
 ;; CHECK-NEXT:   --remove-non-js-ops                           removes operations incompatible
 ;; CHECK-NEXT:                                                 with js
+;; CHECK-NEXT:
+;; CHECK-NEXT:   --remove-uncalled-functions                   removes functions that were not
+;; CHECK-NEXT:                                                 executed during a runtime 
+;; CHECK-NEXT:                                                 coverage profiled run
 ;; CHECK-NEXT:
 ;; CHECK-NEXT:   --remove-unused-brs                           removes breaks from locations
 ;; CHECK-NEXT:                                                 that are not needed

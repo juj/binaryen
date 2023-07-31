@@ -6,19 +6,19 @@
  (import "env" "log_execution" (func $log_execution (param i32)))
  (func $nopp
   (call $log_execution
-   (i32.const 0)
+   (i32.const 2)
   )
   (nop)
  )
  (func $intt (result i32)
   (call $log_execution
-   (i32.const 1)
+   (i32.const 3)
   )
   (i32.const 10)
  )
  (func $workk
   (call $log_execution
-   (i32.const 3)
+   (i32.const 4)
   )
   (block
    (if
@@ -27,7 +27,7 @@
    )
    (block
     (call $log_execution
-     (i32.const 2)
+     (i32.const 7)
     )
     (drop
      (i32.const 1)
@@ -37,12 +37,12 @@
  )
  (func $loops
   (call $log_execution
-   (i32.const 8)
+   (i32.const 5)
   )
   (block
    (loop $x
     (call $log_execution
-     (i32.const 4)
+     (i32.const 8)
     )
     (block
      (call $loops)
@@ -53,18 +53,18 @@
     (call $intt)
     (loop $y
      (call $log_execution
-      (i32.const 5)
+      (i32.const 9)
      )
      (call $loops)
     )
    )
    (block
     (call $log_execution
-     (i32.const 7)
+     (i32.const 11)
     )
     (loop $loop-in
      (call $log_execution
-      (i32.const 6)
+      (i32.const 10)
      )
      (block
       (drop
@@ -83,11 +83,11 @@
  )
  (func $loops-similar
   (call $log_execution
-   (i32.const 10)
+   (i32.const 6)
   )
   (loop $x
    (call $log_execution
-    (i32.const 9)
+    (i32.const 12)
    )
    (block
     (call $loops)
