@@ -53,6 +53,7 @@ set(passes_SOURCES
   I64ToI32Lowering.cpp
   Inlining.cpp
   InstrumentBranchHints.cpp
+  InstrumentCooperativeGC.cpp
   InstrumentLocals.cpp
   InstrumentMemory.cpp
   Intrinsics.cpp
