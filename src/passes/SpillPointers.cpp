@@ -122,6 +122,10 @@ struct SpillPointers
       "gc_dump",
       "table_insert",
       "gc_is_ptr",
+      "gc_register_finalizer",
+      "gc_make_root",
+      "gc_ptr_base",
+      "claim_more_memory",
 
       "getpid",
       "out",
@@ -188,7 +192,7 @@ struct SpillPointers
     if (numPointersSpilled || extraStackSpace)
     {
       ++numFunctionsPointersSpilled;
-      printf("SpillPointers: added %d pointer spill stores in function %s. Stack frame grew by %d bytes.\n",
+      printf("SpillPointers: added %d pointer spill stores in function \"%s\". Stack frame grew by %d bytes.\n",
         numPointersSpilled, func->name.str.data(), extraStackSpace);
     }
     else
