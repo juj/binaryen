@@ -67,6 +67,8 @@ struct InstrumentCooperativeGC : public WalkerPass<PostWalker<InstrumentCooperat
       "start_multithreaded_marking",
       "wait_for_all_threads_finished_marking",
       "mark_current_thread_stack",
+      "sweep_worker_main",
+      "emscripten_semaphore_waitinf_acquire", // TODO: This is not correct, but for testing.
       "mark_from_queue",
       "finish_multithreaded_marking",
       "hash_root",
@@ -87,6 +89,7 @@ struct InstrumentCooperativeGC : public WalkerPass<PostWalker<InstrumentCooperat
       "stackAlloc",
       "emscripten_wasm_worker_initialize",
       "dlfree",
+      "dlmemalign",
       "internal_memalign",
       "prepend_alloc",
       "dispose_chunk",
