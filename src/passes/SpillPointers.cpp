@@ -192,8 +192,8 @@ struct SpillPointers
     if (numPointersSpilled || extraStackSpace)
     {
       ++numFunctionsPointersSpilled;
-      printf("SpillPointers: added %d pointer spill stores in function \"%s\". Stack frame grew by %d bytes.\n",
-        numPointersSpilled, func->name.str.data(), extraStackSpace);
+//      printf("SpillPointers: added %d pointer spill stores in function \"%s\". Stack frame grew by %d bytes.\n",
+  //      numPointersSpilled, func->name.str.data(), extraStackSpace);
     }
     else
       ++numFunctionsPointersNotSpilled;
