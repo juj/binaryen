@@ -80,6 +80,8 @@ struct InstrumentCooperativeGC : public WalkerPass<PostWalker<InstrumentCooperat
       "exit_fenced_access",
       "sbrk",
       "dlcalloc",
+      "dlrealloc",
+      "try_realloc_chunk",
       "__wasm_init_memory",
       "__wasm_call_ctors",
       "strlen",
@@ -102,7 +104,7 @@ struct InstrumentCooperativeGC : public WalkerPass<PostWalker<InstrumentCooperat
   }
 
   static bool functionIsBlacklisted(Function *curr) {
-    return (curr->imported() || (curr->name.startsWith("gc_") && curr->name != "gc_sleep") || curr->name.startsWith("__") ||
+    return (curr->imported() || (curr->name.startsWith("gc_")/* && curr->name != "gc_sleep"*/) || curr->name.startsWith("__") ||
       curr->name.startsWith("emmalloc") || curr->name.startsWith("dlmalloc") ||
       curr->name.startsWith("emscripten_stack") ||
       curr->name.startsWith("SAFE_HEAP") ||
