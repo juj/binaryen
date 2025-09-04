@@ -88,11 +88,13 @@ struct RemoveUncalledFunctions
 
     std::ifstream infile;
     std::ios_base::openmode flags = std::ifstream::in | std::ifstream::binary;
-    infile.open(name.toString().c_str(), flags);
+    std::string filename = name.toString();
+    infile.open(filename, flags);
     if (!infile.is_open()) {
-      std::cerr << "Failed opening '" << name << "'" << std::endl;
+      std::cerr << "Failed opening '" << filename << "'" << std::endl;
       exit(EXIT_FAILURE);
     }
+//    std::cerr << "Opened '" << filename << "' successfully." << std::endl;
     infile.seekg(0, std::ios::end);
     std::streampos insize = infile.tellg();
     blocksToRemove.resize(insize);
@@ -102,10 +104,13 @@ struct RemoveUncalledFunctions
     // Find the imported function that represents the execution coverage logger
     for (auto& func : module->functions) {
       if (func->imported() && func->base == LOGGER) {
-        std::cerr << "Import " << func->name
-                  << " is the execution coverage logger.\n\n";
         coverageLogFunction = func->name;
       }
+    }
+
+    if (!coverageLogFunction) {
+      std::cerr << "Could not find coverage logging function '" << LOGGER << "' in the Wasm module." << std::endl;
+      exit(EXIT_FAILURE);
     }
 
     builder = new Builder(*module);
@@ -141,10 +146,11 @@ struct RemoveUncalledFunctions
         }
       }
     }
-
+/*
     WalkerPass<PostWalker<RemoveUncalledFunctions,
                           UnifiedExpressionVisitor<RemoveUncalledFunctions>>>::
       run(getPassRunner(), module);
+*/
 
     delete builder;
 
@@ -153,15 +159,16 @@ struct RemoveUncalledFunctions
               << numFunctionsRemoved * 100.0 /
                    (numFunctionsRemoved + numFunctionsPreserved)
               << "%) of functions as unreachable.\n";
-    std::cerr << "Removed " << numBlocksRemoved << "/"
-              << numBlocksRemoved + numBlocksPreserved << " ("
-              << numBlocksRemoved * 100.0 /
-                   (numBlocksRemoved + numBlocksPreserved)
-              << "%) of blocks as unreachable.\n";
+    if (numBlocksRemoved > 0 || numBlocksPreserved > 0) {
+      std::cerr << "Removed " << numBlocksRemoved << "/"
+                << numBlocksRemoved + numBlocksPreserved << " ("
+                << numBlocksRemoved * 100.0 /
+                     (numBlocksRemoved + numBlocksPreserved)
+                << "%) of basic blocks as unreachable.\n";
+    }
 
     // Remove unneeded things.
     PassRunner postRunner(getPassRunner());
-    postRunner.add("inlining-optimizing");
     postRunner.add("dce");
     postRunner.add("remove-unused-module-elements");
     postRunner.setIsNested(true);
