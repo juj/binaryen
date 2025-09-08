@@ -30,7 +30,8 @@
 
 #include "asmjs/shared-constants.h"
 #include "shared-constants.h"
-#include <map>
+#include <unordered_map>
+#include <set>
 #include <pass.h>
 #include <wasm-builder.h>
 #include <wasm.h>
@@ -40,12 +41,13 @@ namespace wasm {
 Name LOGGER("log_execution");
 
 struct LogExecution : public WalkerPass<PostWalker<LogExecution>> {
-  std::map<Function*, Index> functionOrdinals;
+  std::unordered_map<Function*, Index> functionOrdinals;
+  std::set<Index> usedFunctionOrdinals;
 
   Index nextFreeIndex = 0;
 
-  // Tries to convert a string to a function index. Returns (Index)-1 on
-  // failure.
+  // Tries to convert a string (containing a number) to a function index.
+  // Returns (Index)-1 on failure.
   Index stringToIndex(const char* s) {
     for (const char* q = s; *q; ++q) {
       if (!isdigit(*q)) {
@@ -109,16 +111,23 @@ struct LogExecution : public WalkerPass<PostWalker<LogExecution>> {
     import->base = LOGGER;
     curr->addFunction(std::move(import));
 
-    // Reserve all function indices up front for the function names. This is
-    // so that the logged ordinal numbers will match up with the function
-    // ordinals.
-    Index idx = 0;
+    // Assigning logged function IDs to each WebAssembly function could be done
+    // arbitrarily e.g. by assign any which random unique integer to each
+    // function, but to provide general purpose to users of the LogExecution
+    // pass, strive to assign each function the same log ID that the function
+    // ordinal is.
+
+    // As convention, imports have function ordinals [0, numImports[,
+    // so skip using those numbers as IDs.
+    Index numImports = 0;
     for (auto& func : curr->functions) {
       if (func->imported()) {
-        ++idx;
+        ++numImports;
       }
     }
 
+    // First assign function indices to all functions that do not have a name,
+    // but are identified only with ordinals.
     for (auto& func : curr->functions) {
       if (func->imported()) {
         continue;
@@ -126,20 +135,32 @@ struct LogExecution : public WalkerPass<PostWalker<LogExecution>> {
 
       Index currentFunctionIndex =
         (Index)stringToIndex(func->name.toString().c_str());
+
       if (currentFunctionIndex != (Index)-1) {
-//        if (currentFunctionIndex != idx) {
-//          std::cerr
-//            << "Functions are not in ordinal order! currentFunctionIndex="
-//            << currentFunctionIndex << ", vs idx=" << idx << std::endl;
-//        }
-      } else {
-        currentFunctionIndex = idx;
+        functionOrdinals[func.get()] = currentFunctionIndex;
+        usedFunctionOrdinals.insert(currentFunctionIndex);
       }
-      functionOrdinals[func.get()] = idx;
-//      std::cerr << "Function " << func->name << " has ordinal " << idx
-//                << std::endl;
-      nextFreeIndex = std::max(nextFreeIndex, currentFunctionIndex + 1);
-      ++idx;
+    }
+
+    // Last, assign function indices to all remaining named functions.
+    nextFreeIndex = numImports;
+    for (auto& func : curr->functions) {
+      if (func->imported()) {
+        continue;
+      }
+
+      // Was this function already assigned a name in previous pass?
+      if (functionOrdinals.find(func.get()) != functionOrdinals.end()) {
+        continue;
+      }
+
+      // Skip over index numbers that were used in the previous pass.
+      while(usedFunctionOrdinals.find(nextFreeIndex) != usedFunctionOrdinals.end()) {
+        ++nextFreeIndex;
+      }
+
+      usedFunctionOrdinals.insert(nextFreeIndex);
+      functionOrdinals[func.get()] = nextFreeIndex++;
     }
 
     PostWalker<LogExecution>::doWalkModule(curr);
