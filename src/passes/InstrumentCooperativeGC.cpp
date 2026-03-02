@@ -108,6 +108,7 @@ struct InstrumentCooperativeGC : public WalkerPass<PostWalker<InstrumentCooperat
       curr->name.startsWith("emmalloc") || curr->name.startsWith("dlmalloc") ||
       curr->name.startsWith("emscripten_stack") ||
       curr->name.startsWith("SAFE_HEAP") ||
+      curr->name.startsWith("emscripten_builtin_") ||
       isBlacklistedFunctionName(curr->name));
   }
 
