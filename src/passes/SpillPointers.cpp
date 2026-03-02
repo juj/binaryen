@@ -145,7 +145,7 @@ struct SpillPointers
       "printf_core",
       "fmt_fp",      
     };
-    for(int i = 0; i < sizeof(blacklisted)/sizeof(blacklisted[0]); ++i)
+    for(int i = 0; i < (int)(sizeof(blacklisted)/sizeof(blacklisted[0])); ++i)
       if (n == blacklisted[i]) return true;
     return false;
   }
@@ -218,13 +218,11 @@ struct SpillPointers
   void spillPointers() {
     pointerType = getModule()->memories[0]->addressType;
     std::string HANDLE_STACK_OVERFLOW =
-      getPassOptions().getArgumentOrDefault("stack-check-handler", "");
+      getArgumentOrDefault("stack-check-handler", "");
 
     ImportInfo info(*getModule());
     Function* stack_overflow_check =
       info.getImportedFunction(ENV, HANDLE_STACK_OVERFLOW);
-
-    pointerType = getModule()->memories[0]->indexType;
 
     // we only care about possible pointers
     auto* func = getFunction();

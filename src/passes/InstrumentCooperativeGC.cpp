@@ -98,7 +98,7 @@ struct InstrumentCooperativeGC : public WalkerPass<PostWalker<InstrumentCooperat
       "fflush",
       "BITVEC_CAS_SET",
     };
-    for(int i = 0; i < sizeof(blacklisted)/sizeof(blacklisted[0]); ++i)
+    for(int i = 0; i < (int)(sizeof(blacklisted)/sizeof(blacklisted[0])); ++i)
       if (n == blacklisted[i]) return true;
     return false;
   }
